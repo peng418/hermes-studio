@@ -11,8 +11,8 @@ import {
 } from '../../packages/server/src/config'
 
 describe('server config', () => {
-  it('defaults to an IPv4 bind host', () => {
-    expect(getListenHost({})).toBe('0.0.0.0')
+  it('defaults to a dual-stack bind host', () => {
+    expect(getListenHost({})).toBe('::')
   })
 
   it('uses BIND_HOST when provided', () => {
@@ -20,7 +20,7 @@ describe('server config', () => {
   })
 
   it('ignores blank BIND_HOST values', () => {
-    expect(getListenHost({ BIND_HOST: ' ' })).toBe('0.0.0.0')
+    expect(getListenHost({ BIND_HOST: ' ' })).toBe('::')
   })
 
   it('defaults web-ui home to ~/.hermes-web-ui', () => {
