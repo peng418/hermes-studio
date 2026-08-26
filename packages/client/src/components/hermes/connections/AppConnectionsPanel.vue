@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// 子路径部署：资源 URL 加 vite base（默认 / 时行为不变）
+const assetUrl = (p: string) => `${import.meta.env.BASE_URL}${p}`
 import { computed, h, onMounted, onUnmounted, ref, watch } from 'vue'
 import { NAlert, NButton, NDataTable, NEmpty, NModal, NPopconfirm, NSpin, NTabPane, NTabs, NTag, useMessage } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
@@ -616,7 +618,7 @@ onUnmounted(() => {
           <div class="app-download-intro">
             <div class="app-download-brand">
               <div class="app-download-logo">
-                <img src="/logo.png" alt="">
+                <img :src="assetUrl('logo.png')" alt="">
               </div>
               <div>
                 <span>HStudio Mobile</span>

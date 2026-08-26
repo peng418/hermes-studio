@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// 子路径部署：资源 URL 加 vite base（默认 / 时行为不变）
+const assetUrl = (p: string) => `${import.meta.env.BASE_URL}${p}`
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -555,7 +557,7 @@ onUnmounted(() => {
 
         <main v-else class="invite-gate">
             <section class="invite-card" aria-labelledby="shared-group-chat-title">
-                <img class="invite-logo" src="/logo.png" alt="" />
+                <img class="invite-logo" :src="assetUrl('logo.png')" alt="" />
                 <div class="invite-heading">
                     <p class="invite-kicker">{{ t('groupChat.title') }}</p>
                     <h1 id="shared-group-chat-title">{{ t('groupChat.shareTitle') }}</h1>

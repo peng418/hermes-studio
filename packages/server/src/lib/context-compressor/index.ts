@@ -63,7 +63,7 @@ export interface CompressionConfig {
   headMessageCount: number
   /** Number of recent messages to keep verbatim (default: 10) */
   tailMessageCount: number
-  /** Timeout for LLM summarization call (default: 300_000ms) */
+  /** Timeout for LLM summarization call (default: 900_000ms; raised from 300s — 16w-token compresses to deepseek stream in >5min) */
   summarizationTimeoutMs: number
 }
 
@@ -72,7 +72,7 @@ export const DEFAULT_COMPRESSION_CONFIG: CompressionConfig = {
   summaryBudget: 8_000,
   headMessageCount: 0,
   tailMessageCount: 10,
-  summarizationTimeoutMs: 300_000,
+  summarizationTimeoutMs: 900_000,
 }
 
 export interface CompressedResult {

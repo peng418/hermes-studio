@@ -21,7 +21,13 @@ export async function ensureDesktopAuthReady(): Promise<void> {
 function getBaseUrl(): string {
   if (import.meta.env.VITE_HERMES_PREVIEW === '1') return DEFAULT_BASE_URL
   if (isDesktopShell()) return DEFAULT_BASE_URL
-  return localStorage.getItem('hermes_server_url') || DEFAULT_BASE_URL
+  const stored = localStorage.getItem('hermes_server_url')
+  if (stored) return stored
+  // fnOS 网关子路径部署：vite build 时注入 base（如 /app/hermes-studio-2/），
+  // 所有 API 请求自动带前缀，网关才能转发到应用；默认 '/' 时保持空串（同源相对）。
+  const base = import.meta.env.BASE_URL
+  if (base && base !== '/') return base.replace(/\/$/, '')
+  return DEFAULT_BASE_URL
 }
 
 export function getApiKey(): string {

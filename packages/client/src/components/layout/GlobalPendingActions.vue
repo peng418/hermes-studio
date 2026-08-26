@@ -349,7 +349,7 @@ function notifyPendingAction(action: GlobalPendingAction) {
   const copy = systemNotificationCopy(action)
   void showSystemNotification({
     ...copy,
-    icon: '/coding-agents/hermes.png',
+    icon: `${import.meta.env.BASE_URL}coding-agents/hermes.png`,
     tag: `hermes-pending-${encodeURIComponent(action.profile)}:${action.key}`,
     clickUrl: pendingSourceClickUrl(action),
   })

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// 子路径部署：资源 URL 加 vite base（默认 / 时行为不变）
+const assetUrl = (p: string) => `${import.meta.env.BASE_URL}${p}`
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
@@ -568,7 +570,7 @@ onUnmounted(() => {
 <template>
   <main class="group-chat-link-view">
     <section class="link-card">
-      <img src="/logo.png" alt="" class="link-logo">
+      <img :src="assetUrl('logo.png')" alt="" class="link-logo">
       <h1>
         {{ editingConnection
           ? t('groupChat.editAgentTitle', { name: editingConnection.agent.name })

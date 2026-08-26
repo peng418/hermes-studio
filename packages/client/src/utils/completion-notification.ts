@@ -74,7 +74,7 @@ async function showServiceWorkerNotification(payload: SystemNotificationPayload)
 
   try {
     const registration = await withTimeout(
-      navigator.serviceWorker.register('/notification-sw.js'),
+      navigator.serviceWorker.register(`${import.meta.env.BASE_URL}notification-sw.js`),
       3000,
       null,
     )

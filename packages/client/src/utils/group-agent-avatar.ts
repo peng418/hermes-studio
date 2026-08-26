@@ -2,11 +2,11 @@ import type { ChatMessage, RoomAgent } from '@/api/hermes/group-chat'
 import type { ProfileAvatar } from '@/api/hermes/profiles'
 
 const DEFAULT_AGENT_ICONS: Record<RoomAgent['agent'], string> = {
-    hermes: '/coding-agents/hermes.png',
-    ekko: '/coding-agents/ekko-agent.png',
-    codex: '/coding-agents/codex-openai.png',
-    claude: '/coding-agents/claude-code.svg',
-    pi: '/coding-agents/pi.svg',
+    hermes: `${import.meta.env.BASE_URL}coding-agents/hermes.png`,
+    ekko: `${import.meta.env.BASE_URL}coding-agents/ekko-agent.png`,
+    codex: `${import.meta.env.BASE_URL}coding-agents/codex-openai.png`,
+    claude: `${import.meta.env.BASE_URL}coding-agents/claude-code.svg`,
+    pi: `${import.meta.env.BASE_URL}coding-agents/pi.svg`,
 }
 
 export function parseStoredAvatar(raw: unknown): ProfileAvatar | null {

@@ -1,8 +1,11 @@
 <script setup lang="ts">
+// 子路径部署：资源 URL 加 vite base（默认 / 时行为不变）
+const assetUrl = (p: string) => `${import.meta.env.BASE_URL}${p}`
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePetsStore } from '@/stores/hermes/pets'
+import { getBaseUrlValue } from '@/api/client'
 import { usePetStateStore } from '@/stores/hermes/pet-state'
 import { useProfilesStore } from '@/stores/hermes/profiles'
 import { desktopBridge, type DesktopWindowBounds } from '@/utils/desktop-bridge'
@@ -180,7 +183,7 @@ async function ensureDesktopAuthReady(): Promise<void> {
   if (token) {
     try {
       localStorage.setItem('AUTH_TOKEN', token)
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(`${getBaseUrlValue()}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -580,7 +583,7 @@ onUnmounted(() => {
       @pointerup.stop="handleResizePointerUp"
       @pointercancel.stop="handleResizePointerUp"
     >
-      <img src="/icons/pet-resize.svg" alt="" draggable="false" />
+      <img :src="assetUrl('icons/pet-resize.svg')" alt="" draggable="false" />
     </button>
   </div>
 </template>

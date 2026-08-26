@@ -7,6 +7,9 @@ import pkg from './package.json'
 const FRONTEND_PORT = Number(process.env.HERMES_WEB_UI_FRONTEND_PORT || 8649)
 const BACKEND_PORT = process.env.HERMES_WEB_UI_BACKEND_PORT || '8648'
 const BACKEND = `http://127.0.0.1:${BACKEND_PORT}`
+// fnOS 网关子路径部署：构建时注入 HERMES_WEB_UI_BASE_URL=/app/<appname>/，
+// 所有静态资源（含 Vite preload 动态 chunk）自动带前缀；默认 '/' 保持直连模式不变。
+const BASE_URL = process.env.HERMES_WEB_UI_BASE_URL || '/'
 
 function createProxyConfig(): ProxyOptions {
   return {
@@ -33,6 +36,7 @@ function createProxyConfig(): ProxyOptions {
 export default defineConfig({
   root: 'packages/client',
   plugins: [vue()],
+  base: BASE_URL,
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
   },

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// 子路径部署：资源 URL 加 vite base（默认 / 时行为不变）
+const assetUrl = (p: string) => `${import.meta.env.BASE_URL}${p}`
 import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { darkTheme, NConfigProvider, NMessageProvider, NDialogProvider, NNotificationProvider } from 'naive-ui'
@@ -150,7 +152,7 @@ useKeyboard()
             </div>
             <div class="app-layout" :class="{ 'no-sidebar': isLoginPage || !showAppSidebar }">
               <button v-if="showMobileMenuButton" class="hamburger-btn" @click="handleMobileMenuClick">
-                <img src="/logo.png" alt="Menu" style="width: 24px; height: 24px;" />
+                <img :src="assetUrl('logo.png')" alt="Menu" style="width: 24px; height: 24px;" />
               </button>
               <div v-if="!isLoginPage && showAppSidebar && appStore.sidebarOpen" class="mobile-backdrop" @click="appStore.closeSidebar" />
               <AppSidebar v-if="!isLoginPage && showAppSidebar" />

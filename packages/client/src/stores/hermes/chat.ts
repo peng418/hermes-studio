@@ -586,7 +586,7 @@ async function uploadFiles(attachments: Attachment[]): Promise<{ name: string; p
   const headers: Record<string, string> = {}
   if (token) headers.Authorization = `Bearer ${token}`
   if (profileName) headers['X-Hermes-Profile'] = profileName
-  const res = await fetch('/upload', {
+  const res = await fetch(`${import.meta.env.BASE_URL}upload`, {
     method: 'POST',
     body: formData,
     headers,
@@ -3357,18 +3357,18 @@ export const useChatStore = defineStore('chat', () => {
   function completionNotificationAgent(session: Session): { icon: string } {
     const codingAgentId = session.codingAgentId || agentToCodingAgentId(session.agent)
     if (codingAgentId === 'codex') {
-      return { icon: '/coding-agents/codex-openai.png' }
+      return { icon: `${import.meta.env.BASE_URL}coding-agents/codex-openai.png` }
     }
     if (codingAgentId === 'claude-code') {
-      return { icon: '/coding-agents/claude-code.svg' }
+      return { icon: `${import.meta.env.BASE_URL}coding-agents/claude-code.svg` }
     }
     if (codingAgentId === 'pi') {
-      return { icon: '/coding-agents/pi.svg' }
+      return { icon: `${import.meta.env.BASE_URL}coding-agents/pi.svg` }
     }
     if (codingAgentId === 'ekko-agent') {
-      return { icon: '/coding-agents/ekko-agent.png' }
+      return { icon: `${import.meta.env.BASE_URL}coding-agents/ekko-agent.png` }
     }
-    return { icon: '/coding-agents/hermes.png' }
+    return { icon: `${import.meta.env.BASE_URL}coding-agents/hermes.png` }
   }
 
   function completionNotificationBody(session: Session, message?: Message): string {

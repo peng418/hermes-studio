@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// 子路径部署：资源 URL 加 vite base（默认 / 时行为不变）
+const assetUrl = (p: string) => `${import.meta.env.BASE_URL}${p}`
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -72,7 +74,7 @@ async function handlePasswordLogin() {
   <div class="login-view">
     <div class="login-card">
       <div class="login-logo">
-        <img src="/logo.png" alt="Hermes" width="80" height="80" />
+        <img :src="assetUrl('logo.png')" alt="Hermes" width="80" height="80" />
       </div>
       <h1 class="login-title">{{ t("login.title") }}</h1>
       <p class="login-desc">{{ t("login.description") }}</p>

@@ -10,11 +10,11 @@ interface ChatAgentSessionIdentity {
 }
 
 const AGENT_AVATARS = {
-  hermes: { label: 'Hermes', src: '/coding-agents/hermes.png' },
-  'ekko-agent': { label: 'Ekko', src: '/coding-agents/ekko-agent.png' },
-  'claude-code': { label: 'Claude', src: '/coding-agents/claude-code.svg' },
-  codex: { label: 'Codex', src: '/coding-agents/codex-openai.png' },
-  pi: { label: 'Pi', src: '/coding-agents/pi.svg' },
+  hermes: { label: 'Hermes', src: `${import.meta.env.BASE_URL}coding-agents/hermes.png` },
+  'ekko-agent': { label: 'Ekko', src: `${import.meta.env.BASE_URL}coding-agents/ekko-agent.png` },
+  'claude-code': { label: 'Claude', src: `${import.meta.env.BASE_URL}coding-agents/claude-code.svg` },
+  codex: { label: 'Codex', src: `${import.meta.env.BASE_URL}coding-agents/codex-openai.png` },
+  pi: { label: 'Pi', src: `${import.meta.env.BASE_URL}coding-agents/pi.svg` },
 } as const satisfies Record<string, ChatAgentAvatar>
 
 export function chatSessionAgentAvatar(session?: ChatAgentSessionIdentity | null): ChatAgentAvatar {

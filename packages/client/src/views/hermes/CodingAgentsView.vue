@@ -99,9 +99,9 @@ const terminalCommand = ref('')
 const terminalKey = ref(0)
 
 const agentLogos: Record<CodingAgentBlock['tool'], string> = {
-  'Claude': '/coding-agents/claude-code.svg',
-  Codex: '/coding-agents/codex-openai.png',
-  Pi: '/coding-agents/pi.svg',
+  'Claude': `${import.meta.env.BASE_URL}coding-agents/claude-code.svg`,
+  Codex: `${import.meta.env.BASE_URL}coding-agents/codex-openai.png`,
+  Pi: `${import.meta.env.BASE_URL}coding-agents/pi.svg`,
 }
 
 const agentBlocks: CodingAgentBlock[] = [

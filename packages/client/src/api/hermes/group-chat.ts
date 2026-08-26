@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client'
-import { request, getApiKey } from '../client'
+import { request, getApiKey, getBaseUrlValue } from '../client'
 import { fetchAuthenticatedBlob, saveBlob } from './binary-content'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -302,7 +302,7 @@ export function connectGroupChat(opts?: {
     const userId = opts?.userId || localStorage.getItem('gc_user_id') || generateUUID()
     if (!opts?.userId) localStorage.setItem('gc_user_id', userId)
 
-    socket = io('/group-chat', {
+    socket = io(`${getBaseUrlValue()}/group-chat`, {
         auth: {
             token: token || undefined,
             userId,
