@@ -99,7 +99,12 @@ export function getStoredUserId(): number | null {
 }
 
 export function getActiveProfileName(): string | null {
-  return localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY)
+  // Fall back to 'default': single-profile setups may never have the storage
+  // key set (fetchProfiles only writes it when it runs), which previously made
+  // every request-scoped endpoint return 400 'Profile is required' because the
+  // X-Hermes-Profile header was omitted. Multi-profile users always have the
+  // key, so this fallback only affects the default-profile case.
+  return localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY) || 'default'
 }
 
 function bodyHasProfileSelector(body: BodyInit | null | undefined): boolean {
