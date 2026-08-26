@@ -194,7 +194,11 @@ async function getRunChatCompressionConfig(profile: string, contextLength: numbe
     logger.warn(err, '[context-compress] failed to read compression config for profile %s, using defaults', profile)
   }
 
-  const threshold = clampRatio(raw.threshold, 0.5, 0.05, 0.95)
+  // Compress earlier (0.35 of context) so each pass summarizes a smaller
+  // middle segment and finishes in seconds rather than minutes. Previously the
+  // default 0.5 let sessions balloon past 100K tokens before compacting, then
+  // a single pass could take 60-180s with no visible progress.
+  const threshold = clampRatio(raw.threshold, 0.35, 0.05, 0.95)
   const targetRatio = clampRatio(raw.target_ratio, 0.2, 0.01, 0.8)
   const protectLastN = clampInt(raw.protect_last_n, 20, 0, 500)
   const protectFirstN = clampInt(raw.protect_first_n, 3, 0, 100)
@@ -478,15 +482,30 @@ export async function compressHistory(
       provider: modelContext.provider || session?.provider,
     })
     const compressor = new ChatContextCompressor({ config: compressionConfig })
-    const result = await compressor.compress(history, upstream, apiKey, sessionId, {
-      profile: summarizerProfile,
-      model: summarizerModelContext.model,
-      provider: summarizerModelContext.provider,
-      sessionId,
-      historyRevision: session?.history_revision ?? 0,
-      workerKey: `${summarizerProfile}:compression:${sessionId}`,
-      allowHermesFallback: modelContext.allowHermesFallback !== false,
-    })
+    const compressStartedAt = Date.now()
+    const progressTimer = setInterval(() => {
+      emit('compression.progress', {
+        event: 'compression.progress',
+        session_id: sessionId,
+        elapsed_ms: Date.now() - compressStartedAt,
+        message_count: msgCount,
+        token_count: totalTokens,
+      })
+    }, 10_000)
+    let result
+    try {
+      result = await compressor.compress(history, upstream, apiKey, sessionId, {
+        profile: summarizerProfile,
+        model: summarizerModelContext.model,
+        provider: summarizerModelContext.provider,
+        sessionId,
+        historyRevision: session?.history_revision ?? 0,
+        workerKey: `${summarizerProfile}:compression:${sessionId}`,
+        allowHermesFallback: modelContext.allowHermesFallback !== false,
+      })
+    } finally {
+      clearInterval(progressTimer)
+    }
     const afterTokens = await calcAndUpdateUsage(sessionId, cState, emit, {
       truncateToolResultsForContext: true,
     })

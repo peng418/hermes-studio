@@ -762,7 +762,7 @@ defineExpose({
               <span class="tool-call-name">
                 {{
                   chatStore.compressionState.compressing
-                    ? `Compressing... (${chatStore.compressionState.messageCount} msgs, ~${formatTokens(chatStore.compressionState.beforeTokens)} tokens)`
+                    ? `Compressing... (${chatStore.compressionState.messageCount} msgs, ~${formatTokens(chatStore.compressionState.beforeTokens)} tokens${chatStore.compressionState.elapsedMs ? ` · ${Math.round(chatStore.compressionState.elapsedMs / 1000)}s elapsed` : ''})`
                     : chatStore.compressionState.compressed
                       ? `Compressed ${chatStore.compressionState.messageCount} msgs: ~${formatTokens(chatStore.compressionState.beforeTokens)} → ~${formatTokens(chatStore.compressionState.afterTokens)} tokens`
                       : `Compression skipped`

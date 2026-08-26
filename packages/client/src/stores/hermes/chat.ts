@@ -481,6 +481,8 @@ interface CompressionState {
   beforeTokens: number
   afterTokens: number
   compressed: boolean | null
+  /** Milliseconds elapsed while a compression pass is running (driven by compression.progress). */
+  elapsedMs?: number
   error?: string
 }
 
@@ -2018,7 +2020,16 @@ export const useChatStore = defineStore('chat', () => {
                   beforeTokens: e.token_count || 0,
                   afterTokens: 0,
                   compressed: null,
+                  elapsedMs: 0,
                 })
+              } else if (e.event === 'compression.progress') {
+                const current = compressionStates.value.get(sessionId)
+                if (current?.compressing) {
+                  setCompressionState(sessionId, {
+                    ...current,
+                    elapsedMs: e.elapsed_ms || 0,
+                  })
+                }
               } else if (e.event === 'compression.completed') {
                 const afterTokens = e.contextTokens || e.afterTokens || 0
                 setCompressionState(sessionId, {
@@ -3695,7 +3706,19 @@ export const useChatStore = defineStore('chat', () => {
                   beforeTokens: (e as any).token_count || 0,
                   afterTokens: 0,
                   compressed: null,
+                  elapsedMs: 0,
                 })
+                break
+              case 'compression.progress':
+                {
+                  const current = compressionStates.value.get(sid)
+                  if (current?.compressing) {
+                    setCompressionState(sid, {
+                      ...current,
+                      elapsedMs: (e as any).elapsed_ms || 0,
+                    })
+                  }
+                }
                 break
               case 'compression.completed': {
                 const afterTokens = (e as any).contextTokens || (e as any).afterTokens || 0

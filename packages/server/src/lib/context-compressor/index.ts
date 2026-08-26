@@ -717,6 +717,18 @@ async function callHermesSummarizer(
 
 // ─── Main Compressor ────────────────────────────────────
 
+/**
+ * Per-session compression mutex.
+ *
+ * A full-LLM compression pass can take 60-180s (summarizing tens of
+ * thousands of tokens). Without a lock, a second request arriving while the
+ * first pass is still running starts ANOTHER full compression of the same
+ * session — doubling the wall-clock time the UI shows "Compressing…" with no
+ * progress. Concurrent callers (bridge resume, auto-compact, manual
+ * /compress) now share the in-flight pass instead of duplicating it.
+ */
+const inflightCompressions = new Map<string, Promise<CompressedResult>>()
+
 export class ChatContextCompressor {
   private config: CompressionConfig
 
@@ -737,6 +749,25 @@ export class ChatContextCompressor {
    * 5. Over threshold → LLM compress, keep last N messages, save new snapshot
    */
   async compress(
+    messages: ChatMessage[],
+    upstream: string,
+    apiKey: string | undefined,
+    sessionId?: string,
+    summarizer?: string | SummarizerOptions,
+  ): Promise<CompressedResult> {
+    if (sessionId) {
+      const existing = inflightCompressions.get(sessionId)
+      if (existing) return existing
+      const task = this.compressInner(messages, upstream, apiKey, sessionId, summarizer).finally(() => {
+        if (inflightCompressions.get(sessionId) === task) inflightCompressions.delete(sessionId)
+      })
+      inflightCompressions.set(sessionId, task)
+      return task
+    }
+    return this.compressInner(messages, upstream, apiKey, sessionId, summarizer)
+  }
+
+  private async compressInner(
     messages: ChatMessage[],
     upstream: string,
     apiKey: string | undefined,
