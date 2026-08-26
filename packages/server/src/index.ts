@@ -94,7 +94,7 @@ function listen(app: Koa, port: number, host: string): Promise<any> {
 }
 
 async function listenWithFallback(app: Koa, port: number, host?: string): Promise<ListenResult> {
-  const bindHost = host || '0.0.0.0'
+  const bindHost = host || '::'
   console.log(`[bootstrap] listening on ${bindHost}:${port}`)
   const primary = await listen(app, port, bindHost)
   return { primary, servers: [primary] }

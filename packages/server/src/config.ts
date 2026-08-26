@@ -6,7 +6,7 @@ import { homedir } from 'os'
  *
  * Server/listen:
  * - PORT: Web UI listen port. Default: 8648.
- * - BIND_HOST: Web UI bind host. Default: 0.0.0.0.
+ * - BIND_HOST: Web UI bind host. Default: :: (IPv6 dual-stack, accepts IPv4-mapped connections).
  * - CORS_ORIGINS: Comma/space-separated cross-origin allowlist. Default: same host only.
  *
  * Web UI storage:
@@ -47,7 +47,11 @@ import { homedir } from 'os'
 
 export function getListenHost(env: Record<string, string | undefined> = process.env): string {
   const host = env.BIND_HOST?.trim()
-  return host || '0.0.0.0'
+  // Default to '::' (IPv6 dual-stack): a domain with both A and AAAA records makes
+  // browsers prefer IPv6, so binding IPv4-only (0.0.0.0) breaks access from such domains.
+  // Node listens on IPv6 with IPv4-mapped addresses (dual-stack) unless ipv6Only is set.
+  // Set BIND_HOST=0.0.0.0 explicitly for IPv4-only behavior.
+  return host || '::'
 }
 
 export function getWebUiHome(env: Record<string, string | undefined> = process.env): string {
@@ -92,7 +96,8 @@ const appRelay = {
 
 export const config = {
   port: parseInt(process.env.PORT || '8648', 10),
-  // Default to IPv4 for stable WSL/Windows browser access. Use BIND_HOST=:: explicitly for IPv6.
+  // Default to dual-stack (::) so domains with AAAA records work out of the box.
+  // Use BIND_HOST=0.0.0.0 explicitly for IPv4-only.
   host: getListenHost(),
   appHome,
   uploadDir: process.env.UPLOAD_DIR || join(appHome, 'upload'),
