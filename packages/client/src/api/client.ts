@@ -139,11 +139,15 @@ function shouldAttachProfileHeader(path: string, options: RequestInit): boolean 
 }
 
 function isProfileWideSessionCollection(pathname: string): boolean {
-  return pathname === '/api/studio/sessions' ||
-    pathname === '/api/studio/sessions/batch-delete' ||
-    pathname === '/api/studio/search/sessions' ||
-    pathname === '/api/studio/sessions/search' ||
-    pathname === '/api/studio/sessions/conversations'
+  // 兼容 compatApiPath：转换前后路径都按 hermes 规范判断
+  const p = pathname.startsWith('/api/studio/')
+    ? '/api/hermes/' + pathname.slice('/api/studio/'.length)
+    : pathname
+  return p === '/api/hermes/sessions' ||
+    p === '/api/hermes/sessions/batch-delete' ||
+    p === '/api/hermes/search/sessions' ||
+    p === '/api/hermes/sessions/search' ||
+    p === '/api/hermes/sessions/conversations'
 }
 
 function emitAuthNotice(kind: 'expired' | 'forbidden') {
@@ -195,7 +199,17 @@ function responseErrorCode(text: string): string | undefined {
   }
 }
 
+// 路径兼容：源码将 API 前缀从 /api/hermes 统一为 /api/studio（#2744），但官方
+// release server 仍只挂载 /api/hermes/*。固定走 /api/hermes/* 双兼容：
+// 旧 release server 直接路由，新版 server 经 legacy-app-api 转发。
+export function compatApiPath(path: string): string {
+  return path.startsWith('/api/studio/')
+    ? '/api/hermes/' + path.slice('/api/studio/'.length)
+    : path
+}
+
 export async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  path = compatApiPath(path)
   await ensureDesktopAuthReady()
   const base = getBaseUrl()
   const url = `${base}${path}`

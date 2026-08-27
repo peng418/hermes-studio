@@ -1,4 +1,4 @@
-import { ensureDesktopAuthReady, getActiveProfileName, getApiKey, getBaseUrlValue } from '../client'
+import { ensureDesktopAuthReady, getActiveProfileName, getApiKey, getBaseUrlValue, compatApiPath } from '../client'
 
 function errorMessage(value: unknown, fallback: string): string {
   if (!value || typeof value !== 'object') return fallback
@@ -19,7 +19,7 @@ export async function fetchAuthenticatedBlob(
     : getActiveProfileName()
   if (profile) headers['X-Hermes-Profile'] = profile
 
-  const response = await fetch(`${getBaseUrlValue()}${path}`, {
+  const response = await fetch(`${getBaseUrlValue()}${compatApiPath(path)}`, {
     headers,
     signal: options.signal,
     cache: 'no-store',

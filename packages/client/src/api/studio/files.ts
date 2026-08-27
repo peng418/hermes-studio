@@ -1,4 +1,4 @@
-import { request, getActiveProfileName, getApiKey, getBaseUrlValue } from '../client'
+import { request, getActiveProfileName, getApiKey, getBaseUrlValue, compatApiPath } from '../client'
 import { fetchAuthenticatedBlob } from './binary-content'
 import type { FileEntry, FileListResult } from './workspace-files'
 export type { FileEntry, FileListResult, GitFileStatus, WorkspaceFileDiff } from './workspace-files'
@@ -88,7 +88,7 @@ export async function uploadFiles(targetDir: string, files: File[], profile?: st
   if (targetDir) params.set('path', targetDir)
   appendProfile(params, profile)
   const query = params.toString()
-  const url = `${base}/api/studio/files/upload${query ? `?${query}` : ''}`
+  const url = `${base}${compatApiPath('/api/studio/files/upload')}${query ? `?${query}` : ''}`
 
   const headers: Record<string, string> = {}
   const token = getApiKey()
@@ -119,7 +119,7 @@ export async function uploadRuntimeFiles(files: File[]): Promise<{ name: string;
   const profileName = getActiveProfileName()
   if (profileName) headers['X-Hermes-Profile'] = profileName
 
-  const res = await fetch(`${base}/api/studio/uploads`, { method: 'POST', headers, body: formData })
+  const res = await fetch(`${base}${compatApiPath('/api/studio/uploads')}`, { method: 'POST', headers, body: formData })
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
     throw new Error(body.error || `Upload failed: ${res.status}`)
@@ -137,7 +137,7 @@ export function getFileDownloadUrl(relativePath: string, fileName?: string, prof
   if (profileName) params.set('profile', profileName)
   const token = getApiKey()
   if (token) params.set('token', token)
-  return `${base}/api/studio/files/download?${params.toString()}`
+  return `${base}${compatApiPath('/api/studio/files/download')}?${params.toString()}`
 }
 
 export async function fetchFilePreviewBlob(
@@ -147,5 +147,5 @@ export async function fetchFilePreviewBlob(
 ): Promise<Blob> {
   const params = new URLSearchParams({ path })
   appendProfile(params, profile)
-  return fetchAuthenticatedBlob(`/api/studio/files/preview?${params}`, { profile, signal })
+  return fetchAuthenticatedBlob(compatApiPath(`/api/studio/files/preview?${params}`), { profile, signal })
 }

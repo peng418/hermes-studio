@@ -1,4 +1,4 @@
-import { getActiveProfileName, getApiKey, getBaseUrlValue } from '../client'
+import { getActiveProfileName, getApiKey, getBaseUrlValue, compatApiPath } from '../client'
 
 function safeDecodeURIComponent(value: string): string {
   try {
@@ -77,7 +77,7 @@ export function getDownloadUrl(filePath: string, fileName?: string, profile?: st
   if (profileName) params.set('profile', profileName)
   const token = getApiKey()
   if (token) params.set('token', token)
-  return `${base}/api/studio/files/download?${params.toString()}`
+  return `${base}${compatApiPath('/api/studio/files/download')}?${params.toString()}`
 }
 
 /**
